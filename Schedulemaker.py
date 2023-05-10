@@ -27,23 +27,23 @@ for i in range(num_weeks):
     random.shuffle(week)  # Randomize order of chores for each week
     rotation.append(week)
 
-# Create calendar events for rotation
+# Create all-day tasks for rotation
 calendar_id = 'primary'  # Replace with your calendar ID
 start_date = datetime.now().date()
+monday = start_date - timedelta(days=start_date.weekday())  # Find the most recent Monday
 for i in range(num_weeks):
+    week_start = monday + timedelta(weeks=i)
     for j in range(num_chores):
         chore, person = rotation[i][j]
-        start = start_date + timedelta(days=i*7 + j)
+        start = week_start + timedelta(days=j)
         end = start + timedelta(days=1)
         event = {
             'summary': chore + ' - ' + person,
             'start': {
-                'dateTime': start.isoformat() + '-07:00',  # Replace with your timezone
-                'timeZone': 'America/Los_Angeles',  # Replace with your timezone
+                'date': start.isoformat(),
             },
             'end': {
-                'dateTime': end.isoformat() + '-07:00',  # Replace with your timezone
-                'timeZone': 'America/Los_Angeles',  # Replace with your timezone
+                'date': end.isoformat(),
             },
         }
         service.events().insert(calendarId=calendar_id, body=event).execute()
